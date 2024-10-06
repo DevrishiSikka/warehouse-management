@@ -318,7 +318,7 @@
             {% for transaction in transactions %}
             <div class="transaction-item">
                 <span>{{ transaction.product.name }} (x{{ transaction.quantity }})</span>
-                <span>= ${{ transaction.product.price|floatformat:2|multiply:transaction.quantity|floatformat:2 }}</span>
+                <span>${{ transaction.product.price|floatformat:2|multiply:transaction.quantity|floatformat:2 }}</span>
             </div>
             {% endfor %}
         </div>
