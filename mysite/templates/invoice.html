@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+</head>
+<body>
+    <h1>Invoice</h1>
+    <ul>
+        {% for transaction in transactions %}
+            <li>{{ transaction.product.name }} - {{ transaction.quantity }} - ${{ transaction.product.price }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Total Amount: ${{ invoice.total_amount }}</h2>
+    <p>Invoice generated at: {{ invoice.generated_at }}</p>
+</body>
+</html>
