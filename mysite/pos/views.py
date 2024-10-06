@@ -24,10 +24,13 @@ def scan_product(request, session_id):
         return redirect('pos:scan_product', session_id=session.id)
 
     transactions = Transaction.objects.filter(session=session)
+    total = sum(transaction.product.price * transaction.quantity for transaction in transactions)
     return render(request, 'scan_product.html', {
         'session': session,
         'transactions': transactions,
+        'total': total,
     })
+
 
 @login_required
 def generate_invoice(request, session_id):

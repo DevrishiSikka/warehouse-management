@@ -1,29 +1,281 @@
+<!-- {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System</title>
+    <link rel="stylesheet" href="{% static 'css/scanProduct.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontConfig.css' %}">
+</head>
+<body>
+    <div class="card">
+        <h1>POS System</h1>
+        <form method="POST" id="pos-form">
+            {% csrf_token %}
+            <div>
+                <label for="barcode">Barcode:</label>
+                <input type="text" id="barcode" name="barcode" required>
+            </div>
+            <div>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <div class="transaction-list" id="transaction-list">
+            <h2>Transaction</h2>
+            {% for transaction in transactions %}
+            <div class="transaction-item">
+                <span>{{ transaction.product.name }} (x{{ transaction.quantity }})</span>
+                <span>${{ transaction.product.price|floatformat:2 }}</span>
+            </div>
+            {% empty %}
+            <p>No products added yet.</p>
+            {% endfor %}
+        </div>
+
+        <div class="total" id="total">
+            Total: ${{ total|floatformat:2 }}
+        </div>
+
+        <a href="{% url 'pos:generate_invoice' session.id %}">
+            <button id="generate-invoice">Generate Invoice</button>
+        </a>
+    </div>
+</body>
+</html> -->
+
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan Product</title>
+    <title>POS System</title>
+    <style>
+        /* Styles remain the same */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f1729;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 24px;
+            color: #f3f4f6;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #4b5563;
+            padding-bottom: 8px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #9ca3af;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #4b5563;
+            background-color: #2d3748;
+            color: #ffffff;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #8b5cf6;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #7c3aed;
+        }
+
+        .transaction-list {
+            margin-top: 32px;
+            background-color: #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid #4b5563;
+            transition: background-color 0.3s ease;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-item:hover {
+            background-color: #374151;
+        }
+
+        .transaction-item span:first-child {
+            color: #e5e7eb;
+        }
+
+        .transaction-item span:last-child {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 24px;
+            text-align: right;
+            color: #f3f4f6;
+        }
+
+        #generate-invoice {
+            margin-top: 24px;
+            background-color: #10b981;
+        }
+
+        #generate-invoice:hover {
+            background-color: #059669;
+        }
+    </style>
 </head>
 <body>
-    <h1>Scan Product</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <label for="barcode">Barcode:</label>
-        <input type="text" id="barcode" name="barcode" required>
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" name="quantity" value="1" min="1">
-        <button type="submit">Add Product</button>
-    </form>
+    <div class="card">
+        <h1>POS System</h1>
 
-    <h2>Transactions</h2>
-    <ul>
-        {% for transaction in transactions %}
-            <li>{{ transaction.product.name }} - {{ transaction.quantity }}</li>
-        {% endfor %}
-    </ul>
+        <!-- Barcode scanner video stream -->
+        <div id="scanner-container" style="margin-bottom: 20px;">
+            <video id="scanner-video" width="100%" style="border: 1px solid #4b5563;" autoplay></video>
+        </div>
 
-    <a href="{% url 'pos:generate_invoice' session.id %}">Generate Invoice</a>
+        <form method="POST" id="pos-form">
+            {% csrf_token %}
+            <div>
+                <label for="barcode">Barcode:</label>
+                <input type="text" id="barcode" name="barcode" required>
+            </div>
+            <div>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <div class="transaction-list" id="transaction-list">
+            <h2>Transaction</h2>
+            {% if transactions %}
+                {% for transaction in transactions %}
+                <div class="transaction-item">
+                    <span>{{ transaction.product.name }} (x{{ transaction.quantity }})</span>
+                    <span>${{ transaction.product.price|floatformat:2 }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No products added yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="total" id="total">
+            Total: ${{ total|floatformat:2 }}
+        </div>
+
+        <a href="{% url 'pos:generate_invoice' session.id %}">
+            <button id="generate-invoice">Generate Invoice</button>
+        </a>
+    </div>
+
+    <script>
+        // Use BarcodeDetector API for barcode scanning
+        document.addEventListener("DOMContentLoaded", function() {
+            const video = document.getElementById('scanner-video');
+            const barcodeInput = document.getElementById('barcode');
+
+            // Check if the browser supports BarcodeDetector
+            if ('BarcodeDetector' in window) {
+                const barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'code_128'] });
+
+                // Start the video stream
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then(stream => {
+                        video.srcObject = stream;
+
+                        // Continuously scan the video stream for barcodes
+                        const scanBarcode = () => {
+                            barcodeDetector.detect(video)
+                                .then(barcodes => {
+                                    if (barcodes.length > 0) {
+                                        // Set the barcode input value with the detected barcode
+                                        barcodeInput.value = barcodes[0].rawValue;
+                                    }
+                                })
+                                .catch(err => console.error(err));
+
+                            // Call the scan function repeatedly
+                            requestAnimationFrame(scanBarcode);
+                        };
+
+                        scanBarcode(); // Start scanning
+                    })
+                    .catch(err => console.error("Error accessing camera: ", err));
+            } else {
+                alert("Barcode detection is not supported on this browser.");
+            }
+        });
+    </script>
 </body>
 </html>
+
