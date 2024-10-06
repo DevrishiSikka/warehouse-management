@@ -1,3 +1,4 @@
+/* Styles remain the same */
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +6,7 @@
 }
 
 body {
-    font-family: "Geist Sans";
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #0f1729;
     color: #ffffff;
     display: flex;
@@ -131,4 +132,13 @@ button:hover {
 
 #generate-invoice:hover {
     background-color: #059669;
+}
+
+/* Adjust the dimensions of the video stream */
+#scanner-video {
+    width: 100%; 
+    height: auto; /* Maintain aspect ratio */
+    max-height: 300px; /* Set max height */
+    border: 1px solid #4b5563; 
+    display: none; /* Initially hidden */
 }

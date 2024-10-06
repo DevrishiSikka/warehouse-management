@@ -47,7 +47,7 @@
 </body>
 </html> -->
 
-
+<!-- 
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -197,7 +197,6 @@
     <div class="card">
         <h1>POS System</h1>
 
-        <!-- Barcode scanner video stream -->
         <div id="scanner-container" style="margin-bottom: 20px;">
             <video id="scanner-video" width="100%" style="border: 1px solid #4b5563;" autoplay></video>
         </div>
@@ -278,4 +277,60 @@
     </script>
 </body>
 </html>
+ -->
 
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System</title>
+    <link rel="stylesheet" href="{% static 'css/scanProduct.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontConfig.css' %}">
+</head>
+<body>
+    <div class="card">
+        <h1>POS System</h1>
+
+        <div id="scanner-container" style="margin-bottom: 20px;">
+            <video id="scanner-video" autoplay></video>
+        </div>
+
+        <button id="start-scan">Scan Barcode</button>
+
+        <form method="POST" id="pos-form">
+            {% csrf_token %}
+            <div>
+                <label for="barcode">Barcode:</label>
+                <input type="text" id="barcode" name="barcode" required>
+            </div>
+            <div>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <div class="transaction-list" id="transaction-list">
+            <h2>Transaction</h2>
+            {% for transaction in transactions %}
+            <div class="transaction-item">
+                <span>{{ transaction.product.name }} (x{{ transaction.quantity }})</span>
+                <span>= ${{ transaction.product.price|floatformat:2|multiply:transaction.quantity|floatformat:2 }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="total" id="total">
+            Total: ${{ total|floatformat:2 }}
+        </div>
+
+        <a href="{% url 'pos:generate_invoice' session.id %}">
+            <button id="generate-invoice">Generate Invoice</button>
+        </a>
+    </div>
+    <script src="{% static 'js/barcodeScanner.js' %}"></script>
+</body>
+</html>

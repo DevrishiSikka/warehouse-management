@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from products.models import Product
 
 class POSSession(models.Model):
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     ip_address = models.GenericIPAddressField()
     start_time = models.DateTimeField(auto_now_add=True)
 
