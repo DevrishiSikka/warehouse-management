@@ -1,4 +1,4 @@
-{% load static %}
+<!-- {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,5 +15,59 @@
     </ul>
     <h2>Total Amount: ${{ invoice.total_amount }}</h2>
     <p>Invoice generated at: {{ invoice.generated_at }}</p>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - POS System</title>
+    <link rel="stylesheet" href="{% static 'css/invoice.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontConfig.css' %}">  
+</head>
+<body>
+    <div class="invoice">
+        <h1>Invoice</h1>
+        <div class="invoice-details">
+            <span>Invoice ID: <strong>{{ invoice.id }}</strong></span>
+            <span>Date: <strong>{{ invoice.generated_at|date:"Y-m-d" }}</strong></span>
+            <span>Time: <strong>{{ invoice.generated_at|time:"H:i:s" }}</strong></span>
+            <span>Session ID: <strong>{{ session.id }}</strong></span>
+            <span>Employee: <strong>{{ employee.username }}</strong></span>
+            <span>Employee ID: <strong>{{ employee.id }}</strong></span>
+        </div>
+        <div class="product-list">
+            <div class="product-header">
+                <span class="product-name">Product Name</span>
+                <span class="product-quantity">Quantity</span>
+                <span class="product-price">Price (each)</span>
+            </div>
+            {% for transaction in transactions %}
+            <div class="product-item">
+                <span class="product-name">{{ transaction.product.name }}</span>
+                <span class="product-quantity">{{ transaction.quantity }}</span>
+                <span class="product-price">${{ transaction.product.price|floatformat:2 }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="totals">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>${{ subtotal|floatformat:2 }}</span>
+            </div>
+            <div class="total-row">
+                <span>GST (10%):</span>
+                <span>${{ gst|floatformat:2 }}</span>
+            </div>
+            <div class="total-row">
+                <span>Total:</span>
+                <span>${{ total|floatformat:2 }}</span>
+            </div>
+        </div>
+        <a href="#" class="button">Send Invoice</a>
+    </div>
 </body>
 </html>

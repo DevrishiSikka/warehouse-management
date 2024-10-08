@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import POSSession, Transaction, Invoice
 from products.models import Product
 from django.contrib.auth.decorators import login_required
@@ -29,10 +30,20 @@ def scan_product(request, session_id):
         'total': total,
     })
 
-
 def generate_invoice(request, session_id):
-    session = POSSession.objects.get(id=session_id)
+    session = get_object_or_404(POSSession, id=session_id)
     transactions = Transaction.objects.filter(session=session)
-    total_amount = sum(transaction.product.price * transaction.quantity for transaction in transactions)
-    invoice = Invoice.objects.create(session=session, total_amount=total_amount)
-    return render(request, 'invoice.html', {'invoice': invoice, 'transactions': transactions})
+    subtotal = sum(transaction.product.price * transaction.quantity for transaction in transactions)
+    gst = subtotal * Decimal('0.10') 
+    total = subtotal + gst
+    invoice, created = Invoice.objects.get_or_create(session=session, total_amount=total)
+    context = {
+        'invoice': invoice,
+        'transactions': transactions,
+        'subtotal': subtotal,
+        'gst': gst,
+        'total': total,
+        'session': session,
+        'employee': session.employee,
+    }
+    return render(request, 'invoice.html', context)
