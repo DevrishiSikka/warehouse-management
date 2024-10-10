@@ -29,12 +29,12 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'https://9000-idx-warehouse-management-1728028025824.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev',
+    '*.cloudworkstations.dev',
     'your-production-domain.com',  # Add any other trusted domains
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://9000-idx-warehouse-management-1728028025824.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev',
+    'https://9000-idx-warehouse-management-1728545204883.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev',
     # Add any other trusted origins here
 ]
 
@@ -51,9 +51,6 @@ INSTALLED_APPS = [
     'products',
     'inventory',
     'pos',
-    'users',
-    'billing',
-    'notifications',
     'dashboard',
 ]
 
