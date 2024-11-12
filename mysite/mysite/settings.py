@@ -29,14 +29,18 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '*.cloudworkstations.dev',
-    'your-production-domain.com',  # Add any other trusted domains
+    '192.168.4.189',
+    'f22d-152-58-226-66.ngrok-free.app' # Add any other trusted domains
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://9000-idx-warehouse-management-1728545204883.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev',
-    # Add any other trusted origins here
+    'http://192.168.*.*',
+    'http://192.168.4.189'
+    'http://f22d-152-58-226-66.ngrok-free.app',
+    'https://f22d-152-58-226-66.ngrok-free.app'
 ]
+
+
 
 # Application definition
 
@@ -155,3 +159,6 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# TWILIO CONFIGURATION
